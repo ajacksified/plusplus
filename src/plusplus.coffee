@@ -96,7 +96,7 @@ module.exports = (robot) ->
   robot.respond ///
     (?:erase )
     # thing to be erased
-    ([\s\w'@.-:\u3040-\u30FF\uFF01-\uFF60\u4E00-\u9FA0]+?)
+    ([\s\w'@.-:\u3040-\u30FF\uFF01-\uFF60\u4E00-\u9FA0]*)
     # optionally erase a reason from thing
     (?:\s+(?:for|because|cause|cuz)\s+(.+))?
     $ # eol
