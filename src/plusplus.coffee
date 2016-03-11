@@ -127,7 +127,7 @@ module.exports = (robot) ->
                   "Erased points for #{name}"
       msg.send message
 
-  robot.respond /score (for\s)?(.*)/i, (msg) ->
+  robot.respond /(?:score|karma) (for\s)?(.*)/i, (msg) ->
     name = msg.match[2].trim().toLowerCase()
 
     if name
@@ -142,7 +142,7 @@ module.exports = (robot) ->
     reasons = scoreKeeper.reasonsForUser(name)
 
     reasonString = if typeof reasons == 'object' && Object.keys(reasons).length > 0
-                     "#{name} has #{score} points. here are some raisins:" +
+                     "#{name} has #{score} points. here are some reasons:" +
                      _.reduce(reasons, (memo, val, key) ->
                        memo += "\n#{key}: #{val} points"
                      , "")
