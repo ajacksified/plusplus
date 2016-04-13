@@ -22,14 +22,8 @@
     "url": "https://github.com/ajacksified/hubot-plusplus/issues"
   },
   "dependencies": {
-    "coffee-script": "~1.6",
     "underscore": ">= 1.0",
-    "clark": "0.0.6"
-  },
-  "devDependencies": {
-    "mocha": "*",
-    "chai": "*",
-    "sinon-chai": "*",
-    "sinon": "*"
+    "clark": "0.0.6",
+    "nestorbot": "0.36.0"
   }
 }
