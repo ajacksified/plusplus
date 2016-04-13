@@ -24,20 +24,14 @@ module.exports = function(robot) {
 
   //   <name>++ [<reason>] - Increment score for a name (for a reason)
   //   <name>-- [<reason>] - Decrement score for a name (for a reason)
-  robot.hear(/\b([\s\w'@.\-:]*)\s*(\+\+|--|—)(?:\s+(?:for|because|cause|cuz|as)\s+(.+))?$/i, function(msg, done) {
+  robot.hear(/^([\s\w'@.\-:<>]*)\s*(\+\+|--|—)(?:\s+(?:for|because|cause|cuz|as)\s+(.+))?$/i, function(msg, done) {
     var dummy, from, lastReason, message, name, operator, reason, reasonScore, ref, ref1, ref2, room, score;
     ref = msg.match, dummy = ref[0], name = ref[1], operator = ref[2], reason = ref[3];
     from = msg.message.user.name.toLowerCase();
     room = msg.message.room;
     reason = reason != null ? reason.trim().toLowerCase() : void 0;
 
-    if (name) {
-      if (name.charAt(0) === ':') {
-        name = (name.replace(/(^\s*@)|([,\s]*$)/g, '')).trim().toLowerCase();
-      } else {
-        name = (name.replace(/(^\s*@)|([,:\s]*$)/g, '')).trim().toLowerCase();
-      }
-    }
+    name = name.replace(/:/, '').trim();
 
     if (!((name != null) && name !== '')) {
       ref1 = scoreKeeper.last(room), name = ref1[0], lastReason = ref1[1];
