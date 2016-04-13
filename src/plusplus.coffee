@@ -175,30 +175,3 @@ module.exports = (robot) ->
       message.splice(0, 0, clark(_.first(_.pluck(tops, "score"), graphSize)))
 
     msg.send message.join("\n")
-
-  robot.router.get "/#{robot.name}/normalize-points", (req, res) ->
-    scoreKeeper.normalize((score) ->
-      if score > 0
-        score = score - Math.ceil(score / 10)
-      else if score < 0
-        score = score - Math.floor(score / 10)
-
-      score
-    )
-
-    res.end JSON.stringify('done')
-
-  robot.router.get "/#{robot.name}/scores", (req, res) ->
-    query = querystring.parse(req._parsedUrl.query)
-
-    if query.name
-      obj = {}
-      obj[query.name] = scoreKeeper.scoreForUser(query.name)
-      res.end JSON.stringify(obj)
-    else
-      direction = query.direction || "top"
-      amount = query.limit || 10
-
-      tops = scoreKeeper[direction](amount)
-
-      res.end JSON.stringify(tops, null, 2)
