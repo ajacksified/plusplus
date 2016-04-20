@@ -47,19 +47,13 @@ module.exports = function(robot) {
     }
   });
 
-  robot.respond(/(?:erase)([\s\w'@.-:]+?)(?:\s+(?:for|because|cause|cuz)\s+(.+))?$/i, function(msg, done) {
+  robot.respond(/(?:erase)([\s\w'@.\-:<>]+?)(?:\s+(?:for|because|cause|cuz)\s+(.+))?$/i, function(msg, done) {
     var __, erased, from, isAdmin, message, name, reason, ref, ref1, ref2, room;
     ref = msg.match, __ = ref[0], name = ref[1], reason = ref[2];
     from = msg.message.user.name.toLowerCase();
     room = msg.message.room;
     reason = reason != null ? reason.trim().toLowerCase() : void 0;
-    if (name) {
-      if (name.charAt(0) === ':') {
-        name = (name.replace(/(^\s*@)|([,\s]*$)/g, '')).trim().toLowerCase();
-      } else {
-        name = (name.replace(/(^\s*@)|([,:\s]*$)/g, '')).trim().toLowerCase();
-      }
-    }
+    name = name.replace(/:/, '').trim();
 
     erased = scoreKeeper.erase(name, from, room, reason);
 
