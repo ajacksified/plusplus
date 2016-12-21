@@ -124,16 +124,12 @@ class ScoreKeeper
     @storage.log.length
 
   top: (amount) ->
-    tops = []
-
-    for name, score of @storage.scores
-      tops.push(name: name, score: score)
-
-    tops.sort((a,b) -> b.score - a.score).slice(0,amount)
+    all = @top(@storage.scores.length)
+    all.sort((a,b) -> b.score - a.score).slice(0,amount)
 
   bottom: (amount) ->
     all = @top(@storage.scores.length)
-    all.sort((a,b) -> b.score - a.score).reverse().slice(0,amount)
+    all.sort((a,b) -> a.score - b.score).slice(0,amount)
 
   normalize: (fn) ->
     scores = {}
