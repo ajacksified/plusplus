@@ -51,6 +51,9 @@ file (you may need to create this file).
 
 Some of the behavior of this plugin is configured in the environment:
 
-`HUBOT_PLUSPLUS_KEYWORD` - alters the word you use to ask for the points, default `score`.
-`HUBOT_PLUSPLUS_REASONS` - the text used for the word "reasons" when hubot lists the top-N report, default `raisins`.
+| Key | Description |
+| --- | ----------- |
+| `HUBOT_PLUSPLUS_KEYWORD` | Alters the word you use to ask for the points, default `score`. |
+| `HUBOT_PLUSPLUS_REASONS` | The text used for the word "reasons" when hubot lists the top-N report, default `raisins`. |
+| `HUBOT_PLUSPLUS_POINTS_TERM` | The term used for points (default is "point,points"). Format is a comma-seperated string with singular term as first item and plural term as second item. |
 
