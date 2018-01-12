@@ -16,6 +16,10 @@
 #   "for|because|cause|cuz|as", so it can be used like:
 #   "foo++ for being awesome" or "foo++ cuz they are awesome".
 #
+#   HUBOT_PLUSPLUS_POINTS_TERM: term used for points (default is
+#   "point,points").  Format is a comma-seperated string with singular term as
+#   first item and plural term as second item.
+#
 # Commands:
 #   <name>++ [<reason>] - Increment score for a name (for a reason)
 #   <name>-- [<reason>] - Decrement score for a name (for a reason)
@@ -37,10 +41,13 @@ querystring = require('querystring')
 ScoreKeeper = require('./scorekeeper')
 
 module.exports = (robot) ->
-  scoreKeeper = new ScoreKeeper(robot)
-  scoreKeyword   = process.env.HUBOT_PLUSPLUS_KEYWORD or 'score'
-  reasonsKeyword = process.env.HUBOT_PLUSPLUS_REASONS or 'raisins'
+  scoreKeeper        = new ScoreKeeper(robot)
+  scoreKeyword       = process.env.HUBOT_PLUSPLUS_KEYWORD or 'score'
+  reasonsKeyword     = process.env.HUBOT_PLUSPLUS_REASONS or 'raisins'
   reasonConjunctions = process.env.HUBOT_PLUSPLUS_CONJUNCTIONS or 'for|because|cause|cuz|as'
+  pointsTerm         = process.env.HUBOT_PLUSPLUS_POINTS_TERM or 'point,points'
+  pointsTermSingular = pointsTerm.split(',')[0]
+  pointsTermPlural   = pointsTerm.split(',')[1]
 
   # sweet regex bro
   robot.hear ///
@@ -86,16 +93,16 @@ module.exports = (robot) ->
       message = if reason?
                   if reasonScore == 1 or reasonScore == -1
                     if score == 1 or score == -1
-                      "#{name} has #{score} point for #{reason}."
+                      "#{name} has #{score} #{pointsTermSingular} for #{reason}."
                     else
-                      "#{name} has #{score} points, #{reasonScore} of which is for #{reason}."
+                      "#{name} has #{score} #{pointsTermPlural}, #{reasonScore} of which is for #{reason}."
                   else
-                    "#{name} has #{score} points, #{reasonScore} of which are for #{reason}."
+                    "#{name} has #{score} #{pointsTermPlural}, #{reasonScore} of which are for #{reason}."
                 else
                   if score == 1
-                    "#{name} has #{score} point"
+                    "#{name} has #{score} #{pointsTermSingular}"
                   else
-                    "#{name} has #{score} points"
+                    "#{name} has #{score} #{pointsTermPlural}"
 
 
       msg.send message
@@ -139,7 +146,7 @@ module.exports = (robot) ->
       message = if reason?
                   "Erased the following reason from #{name}: #{reason}"
                 else
-                  "Erased points for #{name}"
+                  "Erased #{pointsTermPlural} for #{name}"
       msg.send message
 
   # Catch the message asking for the score.
@@ -158,12 +165,12 @@ module.exports = (robot) ->
     reasons = scoreKeeper.reasonsForUser(name)
 
     reasonString = if typeof reasons == 'object' && Object.keys(reasons).length > 0
-                     "#{name} has #{score} points. Here are some #{reasonsKeyword}:" +
+                     "#{name} has #{score} #{pointsTermPlural}. Here are some #{reasonsKeyword}:" +
                      _.reduce(reasons, (memo, val, key) ->
-                       memo += "\n#{key}: #{val} points"
+                       memo += "\n#{key}: #{val} #{pointsTermPlural}"
                      , "")
                    else
-                     "#{name} has #{score} points."
+                     "#{name} has #{score} #{pointsTermPlural}."
 
     msg.send reasonString
 
