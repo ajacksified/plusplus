@@ -19,6 +19,8 @@
 # Commands:
 #   <name>++ [<reason>] - Increment score for a name (for a reason)
 #   <name>-- [<reason>] - Decrement score for a name (for a reason)
+#   ++<name> [<reason>] - Fast Increment score for a name (for a reason)
+#   --<name> [<reason>] - Fast Decrement score for a name (for a reason)
 #   hubot score <name> - Display the score for a name and some of the reasons
 #   hubot top <amount> - Display the top scoring <amount>
 #   hubot bottom <amount> - Display the bottom scoring <amount>
@@ -41,6 +43,73 @@ module.exports = (robot) ->
   scoreKeyword   = process.env.HUBOT_PLUSPLUS_KEYWORD or 'score'
   reasonsKeyword = process.env.HUBOT_PLUSPLUS_REASONS or 'raisins'
   reasonConjunctions = process.env.HUBOT_PLUSPLUS_CONJUNCTIONS or 'for|because|cause|cuz|as'
+
+  # preincrementing to use in-place assignment for better performance
+  robot.hear ///
+    # from beginning of line
+    ^
+    # the increment/decrement operator ++ or --
+    (\+\+|--|—)
+    # the thing being upvoted, which is any number of words and spaces
+    ([\s\w'@.\-:\u3040-\u30FF\uFF01-\uFF60\u4E00-\u9FA0]*)
+    # allow for spaces after the thing being upvoted (@user ++)
+    \s*
+    # optional reason for the plusplus
+    (?:\s+(?:#{reasonConjunctions})\s+(.+))?
+    $ # end of line
+  ///i, (msg) ->
+    # let's get our local vars in place
+    [dummy, operator, name, reason] = msg.match
+    from = msg.message.user.name.toLowerCase()
+    room = msg.message.room
+
+    # do some sanitizing
+    reason = reason?.trim().toLowerCase()
+
+    if name
+      if name.charAt(0) == ':'
+        name = (name.replace /(^\s*@)|([,\s]*$)/g, '').trim().toLowerCase()
+      else
+        name = (name.replace /(^\s*@)|([,:\s]*$)/g, '').trim().toLowerCase()
+
+    # check whether a name was specified. use MRU if not
+    unless name? && name != ''
+      [name, lastReason] = scoreKeeper.last(room)
+      reason = lastReason if !reason? && lastReason?
+
+    # do the {up, down}vote, and figure out what the new score is
+    [score, reasonScore] = if operator == "++"
+              scoreKeeper.add(name, from, room, reason)
+            else
+              scoreKeeper.subtract(name, from, room, reason)
+
+    # if we got a score, then display all the things and fire off events!
+    if score?
+      message = if reason?
+                  if reasonScore == 1 or reasonScore == -1
+                    if score == 1 or score == -1
+                      "#{name} has #{score} point for #{reason}."
+                    else
+                      "#{name} has #{score} points, #{reasonScore} of which is for #{reason}."
+                  else
+                    "#{name} has #{score} points, #{reasonScore} of which are for #{reason}."
+                else
+                  if score == 1
+                    "#{name} has #{score} point"
+                  else
+                    "#{name} has #{score} points"
+
+
+      msg.send message
+
+      robot.emit "plus-one", {
+        name:      name
+        direction: operator
+        room:      room
+        reason:    reason
+        from:      from
+      }
+
 
   # sweet regex bro
   robot.hear ///
