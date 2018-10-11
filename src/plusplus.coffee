@@ -11,7 +11,7 @@
 #   "score|karma" so hubot will answer to both keywords.
 #   If not provided will default to 'score'.
 #
-#   HUBOT_PLUSPLUS_REASON_CONJUNCTIONS: a pipe separated list of conjuntions to
+#   HUBOT_PLUSPLUS_CONJUNCTIONS: a pipe separated list of conjuntions to
 #   be used when specifying reasons. The default value is
 #   "for|because|cause|cuz|as", so it can be used like:
 #   "foo++ for being awesome" or "foo++ cuz they are awesome".
